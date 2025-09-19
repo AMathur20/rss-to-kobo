@@ -29,7 +29,7 @@ dropbox_tokens/*
 feeds/*
 !feeds/.gitkeep
 !feeds/example_user_feeds.yaml
-*.yaml
+
 
 # Logs
 *.log
