@@ -1,0 +1,44 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Virtual environments
+venv/
+env/
+.venv/
+ENV/
+
+# Output EPUBs
+output/
+!output/.gitkeep
+
+# Dropbox tokens (track .gitkeep but ignore actual tokens)
+dropbox_tokens/*
+!dropbox_tokens/.gitkeep
+*.json
+
+# Feeds
+feeds/*
+!feeds/.gitkeep
+!feeds/example_user_feeds.yaml
+*.yaml
+
+# Logs
+*.log
+logs/
+
+# System files
+.DS_Store
+Thumbs.db
+
+# IDE configs
+.vscode/
+.idea/

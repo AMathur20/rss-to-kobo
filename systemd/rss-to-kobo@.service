@@ -1,0 +1,28 @@
+[Unit]
+Description=RSS to Kobo for user %i
+After=network.target
+
+[Service]
+Type=oneshot
+User=%i
+Environment=PYTHONUNBUFFERED=1
+WorkingDirectory=/home/%i/rss-to-kobo
+ExecStart=/home/%i/rss-to-kobo/venv/bin/python -m scripts.fetch_and_build --user %i
+ExecStartPost=/home/%i/rss-to-kobo/venv/bin/python -m scripts.upload_to_dropbox --user %i
+
+# Logging configuration
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=rss-to-kobo
+
+# Security options
+ProtectSystem=full
+PrivateTmp=yes
+NoNewPrivileges=yes
+
+# Resource limits
+MemoryLimit=512M
+CPUQuota=100%
+
+[Install]
+WantedBy=multi-user.target

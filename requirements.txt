@@ -1,0 +1,23 @@
+# Requires Python 3.10+
+
+# RSS parsing
+feedparser==6.0.11
+
+# EPUB creation
+ebooklib==0.18
+
+# HTML cleaning (for nicer EPUB articles)
+beautifulsoup4==4.12.3
+lxml==5.3.0
+
+# Dropbox API
+dropbox==12.0.2
+
+# YAML config parsing
+pyyaml==6.0.2
+
+# Date/time helpers
+python-dateutil==2.9.0.post0
+
+# Logging with colors (optional, but useful)
+colorlog==6.8.2
