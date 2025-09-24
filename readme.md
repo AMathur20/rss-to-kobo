@@ -129,6 +129,25 @@ pip install -r requirements.txt
    ```
    
    **Security Note:** Keep your token secret and never commit it to version control.
+#### 🔄 Dropbox Token Management
+
+#### Token Expiration
+Dropbox access tokens typically expire after 4 hours. For long-running services:
+
+1. **Check Token Expiration**:
+   - Go to [Dropbox App Console](https://www.dropbox.com/developers/apps)
+   - Select your app
+   - Check the token expiration under "Generated access token"
+
+2. **Renewing an Expired Token**:
+   ```bash
+   # Generate a new token from the Dropbox App Console
+   # Then update the token file
+   echo "YOUR_NEW_ACCESS_TOKEN" > /path/to/rss-to-kobo/dropbox_tokens/username_token.json
+   
+   # Verify the token works
+   python3 -c "from scripts.upload_to_dropbox import DropboxUploader; print(DropboxUploader('username').test_connection())"
+   ```
 
 ### 4. Test the Pipeline
 
@@ -445,6 +464,35 @@ export RSS_TO_KOBO_LOG_FILE=/custom/path/to/logfile.log
    # Run tests
    pytest
    ```
+
+## 🚀 Version 2.0 Roadmap
+
+### Planned Features
+
+1. **OAuth 2.0 with Refresh Tokens**
+   - Implement OAuth 2.0 flow for Dropbox
+   - Automatic token refresh before expiration
+   - Secure token storage
+
+2. **Web Interface**
+   - User-friendly dashboard for feed management
+   - Token management UI
+   - Real-time status and logs
+
+3. **Enhanced Error Handling**
+   - Better error messages for token expiration
+   - Automatic retry mechanisms
+   - Email notifications for failures
+
+4. **Multi-User Support**
+   - User authentication
+   - Per-user feed management
+   - Role-based access control
+
+5. **Deployment Improvements**
+   - Docker containerization
+   - Systemd service templates
+   - Automated backups
 
 ## 🤝 Contributing
 

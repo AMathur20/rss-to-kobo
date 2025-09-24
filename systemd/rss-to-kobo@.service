@@ -1,28 +1,29 @@
 [Unit]
-Description=RSS to Kobo for user %i
+Description=RSS to Kobo for profile %i
 After=network.target
 
 [Service]
 Type=oneshot
-User=%i
+User=YOUR_USERNAME  # Change this to the user that will run the service
+WorkingDirectory=/path/to/rss-to-kobo
 Environment=PYTHONUNBUFFERED=1
-WorkingDirectory=/home/%i/rss-to-kobo
-ExecStart=/home/%i/rss-to-kobo/venv/bin/python -m scripts.fetch_and_build --user %i
-ExecStartPost=/home/%i/rss-to-kobo/venv/bin/python -m scripts.upload_to_dropbox --user %i
+
+# Use the Python from your virtual environment
+ExecStart=/path/to/venv/bin/python rss_to_kobo.py --user %i
 
 # Logging configuration
 StandardOutput=journal
 StandardError=journal
-SyslogIdentifier=rss-to-kobo
+SyslogIdentifier=rss-to-kobo-%i
 
 # Security options
 ProtectSystem=full
 PrivateTmp=yes
 NoNewPrivileges=yes
 
-# Resource limits
-MemoryLimit=512M
-CPUQuota=100%
+# Restart on failure (but not for token expiration)
+Restart=on-failure
+RestartSec=60s
 
 [Install]
 WantedBy=multi-user.target

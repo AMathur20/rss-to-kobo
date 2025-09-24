@@ -1,20 +1,15 @@
 [Unit]
-Description=Run RSS to Kobo daily for user %i
-Documentation=man:systemd.timer(5)
+Description=Run RSS to Kobo for %i daily
 
 [Timer]
-# Run daily at 6:00 AM
+# Run daily at 6 AM
 OnCalendar=*-*-* 06:00:00
-# If the system was off, run shortly after it comes back online
-Persistent=true
-# Add some jitter to prevent thundering herd
-RandomizedDelaySec=1h
-# Allow missed runs to run as soon as possible
-AccuracySec=1h
 
-# Restart the service if it fails
-RestartSec=10min
-Restart=on-failure
+# If the system was off, run the service as soon as possible after boot
+Persistent=true
+
+# Allow running multiple instances if the previous one is still running
+WakeSystem=false
 
 [Install]
 WantedBy=timers.target
