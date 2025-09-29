@@ -10,7 +10,8 @@ from typing import Any, Dict, List, Optional
 from bs4 import BeautifulSoup
 from ebooklib import epub
 
-from .utils import format_date, get_output_path, setup_logger
+from .utils import format_date, get_output_path
+from .utils.logging_utils import setup_logger
 
 logger = setup_logger(__name__)
 
@@ -18,28 +19,39 @@ logger = setup_logger(__name__)
 class EPUBCreator:
     """Class to handle EPUB creation from RSS feed items."""
 
-    def __init__(self, user: str, title: str = "Daily RSS Digest") -> None:
+    def __init__(self, user: str, title: str = "Daily RSS Digest", 
+                 author: str = "RSS to Kobo", language: str = "en") -> None:
         """Initialize the EPUB creator.
 
         Args:
             user: Username for the EPUB
             title: Base title for the EPUB
+            author: Author name for the EPUB
+            language: Language code for the EPUB
         """
         self.user = user
         self.title = f"{title} - {format_date()}"
+        self.author = author
+        self.language = language
         self.book: Optional[epub.EpubBook] = None
         self.chapters: List[epub.EpubHtml] = []
 
     def _init_book(self) -> None:
         """Initialize the EPUB book with metadata."""
+        if self.book is not None:
+            return
+            
         self.book = epub.EpubBook()
-
-        # Set metadata
-        self.book.set_identifier(f"rss-digest-{datetime.now().strftime('%Y%m%d')}")
+        
+        # Set basic metadata
+        self.book.set_identifier(f"rss-digest-{datetime.now().strftime('%Y%m%d%H%M%S')}")
         self.book.set_title(self.title)
-        self.book.set_language("en")
-        self.book.add_author("RSS to Kobo")
-
+        self.book.set_language(self.language)
+        self.book.add_author(self.author)
+        
+        # Add creation date
+        self.book.add_metadata('DC', 'date', datetime.now().strftime('%Y-%m-%dT%H:%M:%S'))
+        
         # Add default CSS
         self._add_default_styling()
 
@@ -156,26 +168,82 @@ class EPUBCreator:
             logger.info("Generated EPUB: %s", output_path)
             return output_path
         except Exception as e:
-            logger.error("Error generating EPUB: %s", e)
+            logger.error("Error writing EPUB file: %s", e, exc_info=True)
             raise
 
 
-def build_epub(user: str, feeds_data: Dict[str, List[Dict[str, Any]]]) -> Path:
+def build_epub(
+    user: str, 
+    feeds_data: Dict[str, List[Dict[str, Any]]],
+    output_path: Optional[Path] = None,
+    config: Optional[Dict[str, Any]] = None
+) -> Path:
     """
     Build an EPUB from feed data.
 
     Args:
         user: Username for the EPUB
         feeds_data: Dictionary mapping feed names to lists of articles
+        output_path: Optional path to save the EPUB file
+        config: Optional configuration dictionary
 
     Returns:
         Path to the generated EPUB file
+        
+    Raises:
+        ValueError: If there's an error building the EPUB
     """
-    logger.info("Building EPUB for user: %s", user)
-    creator = EPUBCreator(user)
-
-    for feed_name, articles in feeds_data.items():
-        logger.info("Adding %d articles from feed: %s", len(articles), feed_name)
-        creator.add_feed(feed_name, articles)
-
-    return creator.generate()
+    try:
+        # Process configuration
+        config = config or {}
+        output_config = config.get('output', {})
+        
+        # Determine output path
+        if not output_path:
+            output_dir = Path(output_config.get('directory', 'output'))
+            output_dir.mkdir(parents=True, exist_ok=True)
+            
+            # Use configured filename pattern or default
+            filename_pattern = output_config.get('filename_pattern', 
+                                              f"{user}_rss_%Y%m%d.epub")
+            filename = datetime.now().strftime(filename_pattern)
+            output_path = output_dir / filename
+        
+        # Get metadata from config or use defaults
+        title = output_config.get('title', 'Daily RSS Digest')
+        author = output_config.get('author', 'RSS to Kobo')
+        language = output_config.get('language', 'en')
+        
+        # Create EPUB
+        creator = EPUBCreator(
+            user=user,
+            title=title,
+            author=author,
+            language=language
+        )
+        
+        # Add description if available
+        if 'description' in output_config:
+            creator.book.add_metadata('DC', 'description', output_config['description'])
+        
+        # Add all feeds and their articles
+        for feed_name, articles in feeds_data.items():
+            if not articles:
+                logger.warning("No articles found for feed: %s", feed_name)
+                continue
+                
+            try:
+                creator.add_feed(feed_name, articles)
+                logger.debug("Added feed to EPUB: %s (%d articles)", 
+                           feed_name, len(articles))
+            except Exception as e:
+                logger.error("Error adding feed %s to EPUB: %s", feed_name, e)
+                continue
+        
+        # Save the EPUB
+        return creator.generate()
+        
+    except Exception as e:
+        error_msg = f"Error building EPUB: {e}"
+        logger.error(error_msg, exc_info=True)
+        raise ValueError(error_msg) from e

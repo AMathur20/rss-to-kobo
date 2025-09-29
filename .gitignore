@@ -23,13 +23,23 @@ output/
 # Dropbox tokens (track .gitkeep but ignore actual tokens)
 dropbox_tokens/*
 !dropbox_tokens/.gitkeep
-*.json
+!dropbox_tokens/*.example
 
-# Feeds
-feeds/*
-!feeds/.gitkeep
-!feeds/example_user_feeds.yaml
+# Environment files
+.env
+!.env.template
+.env.*
+!.env.template
 
+# Local configuration
+config.local.*
+*.local.*
+
+# Feed configurations - ignore user-specific configs but keep example
+config/feeds/*.yaml
+!config/feeds/example_user_feeds.yaml
+!config/feeds/sample_user.yaml
+!config/feeds/test_user.yaml
 
 # Logs
 *.log

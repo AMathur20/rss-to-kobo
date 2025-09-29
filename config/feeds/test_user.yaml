@@ -1,0 +1,28 @@
+# RSS Feed Configuration for Test User
+# This is a sample configuration file for testing
+
+feeds:
+  - name: "BBC News"
+    url: "http://feeds.bbci.co.uk/news/rss.xml"
+    max_items: 3
+    enabled: true
+
+  - name: "TechCrunch"
+    url: "https://techcrunch.com/feed/"
+    max_items: 2
+    enabled: true
+
+# Output settings
+output:
+  title: "Test RSS Digest"
+  author: "Test User"
+  language: "en"
+  directory: "output"
+  filename_pattern: "test_%Y%m%d.epub"
+  description: "A test RSS digest"
+
+# Dropbox settings (optional)
+# Uncomment and modify these if you want to test Dropbox upload
+# dropbox:
+#   target_folder: "/RSS Feeds"
+#   filename: "Test-Digest.epub"

@@ -21,3 +21,13 @@ python-dateutil==2.9.0.post0
 
 # Logging with colors (optional, but useful)
 colorlog==6.8.2
+
+# OAuth 2.0 and security
+python-dotenv==1.0.1
+cryptography==42.0.5
+requests==2.31.0
+
+# Development and testing
+pytest==8.1.1
+pytest-cov==4.1.0
+responses==0.24.1  # For mocking HTTP requests in tests

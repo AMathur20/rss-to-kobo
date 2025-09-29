@@ -1,0 +1,32 @@
+# RSS Feed Configuration for Sample User
+# Add your RSS feed URLs and settings below
+
+feeds:
+  - name: "BBC News"
+    url: "http://feeds.bbci.co.uk/news/rss.xml"
+    max_items: 10
+    enabled: true
+
+  - name: "TechCrunch"
+    url: "https://techcrunch.com/feed/"
+    max_items: 5
+    enabled: true
+
+  - name: "The Verge"
+    url: "https://www.theverge.com/rss/index.xml"
+    max_items: 5
+    enabled: true
+
+# Output settings
+output:
+  title: "My Daily News Digest"  # Custom title for the generated EPUB
+  author: "RSS to Kobo"         # Author name for the EPUB
+  language: "en"                # Language code for the EPUB
+  directory: "output"           # Output directory for the EPUB file
+  filename_pattern: "%Y%m%d-news.epub"  # Filename pattern (strftime format)
+  description: "A daily digest of news from your favorite sources"
+
+# Dropbox settings (optional)
+dropbox:
+  target_folder: "/RSS Feeds"   # Folder in Dropbox to save the EPUB
+  filename: "Daily-Digest.epub"  # Filename to use in Dropbox
